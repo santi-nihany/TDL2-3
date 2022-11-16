@@ -1,13 +1,17 @@
 package components;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 import javax.swing.*;
 
 public class MainFrame extends JFrame {
 
 	private JPanel panel;
+	private JButton btnConf;
 	
-	private MainFrame() {
+	public MainFrame() {
 		 // Frame
 		 super("Mundial Qatar 2022");
 		 this.setSize(400,200);
@@ -23,7 +27,20 @@ public class MainFrame extends JFrame {
 		 subPanel.setLayout(grid);
 		 subPanel.add(new JPanel());
 		 subPanel.add(new JPanel());
-		 subPanel.add(new JButton("Configuración"));
+		 btnConf = new JButton("Configuración");
+		 btnConf.addMouseListener(new MouseAdapter() {
+	            public void mouseClicked(MouseEvent e) {
+	                //super.mouseClicked(e);
+	            	Configuracion conf = new Configuracion();
+	                conf.setVisible(true);
+	                conf.btnGuardar.addMouseListener(new MouseAdapter() {
+	    	            public void mouseClicked(MouseEvent e) {
+	    	            	conf.setVisible(false);
+	    	                }
+	    		 });
+	                }
+		 });
+		 subPanel.add(btnConf);
 		 subPanel.add(new JButton("lala"));
 		 subPanel.add(new JPanel());
 		 subPanel.add(new JPanel());
