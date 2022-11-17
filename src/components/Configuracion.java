@@ -6,19 +6,20 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.*;
 
-public class Configuracion extends JFrame {
+public class Configuracion extends JDialog {
 
 	private JLabel lblUsuario;
 	private JLabel lblContraseña;
-	private TextField tfUsuario;
+	private JTextField tfUsuario;
 	private JPasswordField pf;
 	public JButton btnGuardar;
 	public Configuracion() throws HeadlessException {
 		super();
+		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		this.setLayout(new FlowLayout());
 		lblUsuario = new JLabel("        Usuario");
 		this.add(lblUsuario);
-		tfUsuario = new TextField("", 20);
+		tfUsuario = new JTextField("", 14);
 		this.add(tfUsuario);
 		lblContraseña = new JLabel("Contraseña");
 		this.add(lblContraseña);
@@ -27,7 +28,10 @@ public class Configuracion extends JFrame {
 		this.add(pf);
 		btnGuardar = new JButton("Guardar");
 		this.add(btnGuardar);
-		this.setSize(260,140);
+		this.setTitle("Configuracion");
+		this.setLocationRelativeTo(null);
+		this.setSize(270,130);
+		
 	}
 
 }
