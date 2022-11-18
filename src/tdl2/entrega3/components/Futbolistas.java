@@ -1,4 +1,4 @@
-package components;
+package tdl2.entrega3.components;
 
 import java.awt.*;
 

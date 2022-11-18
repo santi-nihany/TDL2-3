@@ -1,6 +1,6 @@
 package tdl2.entrega3;
 
-import components.*;
+import tdl2.entrega3.components.*;
 
 public class Aplicacion {
 

@@ -1,4 +1,4 @@
-package classes;
+package tdl2.entrega3.classes;
 
 public class Futbolista {
 	private String nombre;

@@ -1,4 +1,4 @@
-package components;
+package tdl2.entrega3.components;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -9,7 +9,7 @@ import javax.swing.*;
 public class Configuracion extends JDialog {
 
 	private JLabel lblUsuario;
-	private JLabel lblContraseña;
+	private JLabel lblContra;
 	private JTextField tfUsuario;
 	private JPasswordField pf;
 	public JButton btnGuardar;
@@ -21,8 +21,8 @@ public class Configuracion extends JDialog {
 		this.add(lblUsuario);
 		tfUsuario = new JTextField("", 14);
 		this.add(tfUsuario);
-		lblContraseña = new JLabel("Contraseña");
-		this.add(lblContraseña);
+		lblContra = new JLabel("Contraseña");
+		this.add(lblContra);
 		pf = new JPasswordField("", 14);
 		pf.setEchoChar('●');
 		this.add(pf);
