@@ -38,13 +38,13 @@ public class MainFrame extends JFrame {
 		 subPanel.setLayout(grid);
 		 subPanel.add(new JPanel());
 		 subPanel.add(new JPanel());
-		btnConf = new JButton();
+		btnConf = new JButton("Configuracion");
 		btnConf.addMouseListener(new MouseAdapter() {
 	           public void mouseClicked(MouseEvent e) {
 	               conf.setVisible(true);
 	               }
 		});
-		try {
+		/*try {
             InputStream inputStream = getClass().getResourceAsStream("/recursos/iconos/conf.png");
             Image img = ImageIO.read(inputStream);
             ImageIcon i = new ImageIcon(img);
@@ -55,7 +55,7 @@ public class MainFrame extends JFrame {
         } catch (IllegalArgumentException | NullPointerException e){
             System.err.println("El ícono no se encuentra en el directorio especificado");
             e.printStackTrace();
-        }
+        }*/
 		 subPanel.add(btnConf);
 		 subPanel.add(new JButton("lala"));
 		 subPanel.add(new JPanel());
