@@ -12,6 +12,7 @@ public class Configuracion extends JDialog {
 	private JLabel lblContra;
 	private JTextField tfUsuario;
 	private JPasswordField pf;
+	private static JDialog prueba;
 	public JButton btnGuardar;
 	public Configuracion() throws HeadlessException {
 		super();
@@ -27,11 +28,11 @@ public class Configuracion extends JDialog {
 		pf.setEchoChar('●');
 		this.add(pf);
 		btnGuardar = new JButton("Guardar");
-		/*btnGuardar.addMouseListener(new MouseAdapter() {
+		btnGuardar.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-            	this.setVisible(false);
+            	prueba.setVisible(false);
                 }
-		});*/
+		});
 		this.add(btnGuardar);
 		this.setTitle("Configuracion");
 		this.setLocationRelativeTo(null);

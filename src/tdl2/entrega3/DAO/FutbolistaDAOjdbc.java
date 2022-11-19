@@ -9,30 +9,43 @@ import tdl2.entrega3.classes.Pais;
 
 public class FutbolistaDAOjdbc implements FutbolistaDAO {
 
+	public FutbolistaDAOjdbc() {
+		super();
+	}
+
 	@Override
 	public void guardar(Futbolista f) throws SQLException {
 		// TODO Auto-generated method stub
 		Connection con = null;
 		PreparedStatement pst = null;
-		Statement st = null;
+		PreparedStatement pst2 = null;
 		ResultSet rs = null;
 		try {
-			con = MiConexion.getCon("root","");
-			pst = con.prepareStatement("INSERT INTO futbolista (nombre,apellido,docIdentidad,telefono,email,idpais) VALUES(?,?,?,?,?,?)");
-			pst.setString(1,f.getNombre());
-			pst.setString(2,f.getApellido());
-			pst.setInt(3,f.getDocId());
-			pst.setInt(4,f.getTeléfono());
-			pst.setString(5,f.getEmail());
-			st = con.createStatement();
-			rs = st.executeQuery("SELECT idpais,nombre FROM pais WHERE nombre ="+f.getPaís().getNombre());
-			int paisID = rs.getInt(0);
-			pst.setInt(6,paisID);
-			pst.executeUpdate();
-			System.out.println("Futbolista agregado con exito.");
+			if (this.encontrar(f.getTeléfono()) != null) {
+				System.out.println("Ya existe el futbolista");
+			} else {
+				con = MiConexion.getCon("root","");
+				// FALTA AGREGAR EL PAIS SI NO EXISTE!
+				pst2 = con.prepareStatement("SELECT idpais,nombre FROM pais WHERE nombre =?");
+				pst2.clearParameters();
+				pst2.setString(1,f.getPaís().getNombre());
+				rs = pst2.executeQuery();
+				rs.next();
+				int paisID = rs.getInt("idpais");
+				pst = con.prepareStatement("INSERT INTO futbolista (nombre,apellido,docIdentidad,telefono,email,idpais) VALUES(?,?,?,?,?,?)");
+				pst.setString(1,f.getNombre());
+				pst.setString(2,f.getApellido());
+				pst.setInt(3,f.getDocId());
+				pst.setInt(4,f.getTeléfono());
+				pst.setString(5,f.getEmail());
+				pst.setInt(6,paisID);
+				pst.executeUpdate();
+				System.out.println("Futbolista agregado con exito.");
+			}
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Error de SQL: "+e.getMessage());
 		} finally {
 			if (con != null) {
 				con.close();
@@ -40,8 +53,8 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 			if (pst != null) {
 				pst.close();
 			}
-			if (st != null) {
-				st.close();
+			if (pst2 != null) {
+				pst2.close();
 			}
 			if (rs != null) {
 				rs.close();
@@ -56,13 +69,14 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 		PreparedStatement pst = null;
 		try {
 			con = MiConexion.getCon("root","");
-			pst = con.prepareStatement("DELETE FROM sede WHERE telefono = ?");
+			pst = con.prepareStatement("DELETE FROM futbolista WHERE telefono = ?");
 			pst.clearParameters();
 			pst.setInt(1,f.getTeléfono());
 			pst.executeUpdate();
 			System.out.println("Eliminado exitosamente");
 		} catch (SQLException e) {
 			e.printStackTrace();
+			System.err.println("Error de SQL: "+e.getMessage());
 		} finally {
 			if (con != null) {
 				con.close();
@@ -98,7 +112,7 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 			pst2.executeUpdate();
 			System.out.println("Editado exitosamente.");
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.err.println("Error de SQL: "+e.getMessage());
 		} finally {
 			if (con != null) {
 				con.close();
@@ -119,16 +133,17 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 	public Futbolista encontrar(int x) throws SQLException {
 		Futbolista f=null;
 		Connection con = null;
-		Statement st = null;
 		ResultSet rs = null;
 		PreparedStatement pst = null;
+		PreparedStatement pst2 = null;
 		ResultSet rs2 = null;
 		try{
 			con = MiConexion.getCon("root","");
-			st = con.createStatement();
-			rs= st.executeQuery("SELECT * FROM futbolista");
-			boolean valido = true;
-			while (rs.next() && valido){
+			pst = con.prepareStatement("SELECT * FROM futbolista WHERE telefono =?");
+			pst.clearParameters();
+			pst.setInt(1,x);
+			rs= pst.executeQuery();
+			rs.next();
 				if (rs.getInt("telefono")==x) {
 					f = new Futbolista();
 					f.setNombre(rs.getString("nombre"));
@@ -137,17 +152,15 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 					f.setTeléfono(rs.getInt("telefono"));
 					f.setEmail(rs.getString("email"));
 					int idpais = rs.getInt("idpais");
-					pst = con.prepareStatement("SELECT * FROM pais WHERE idpais = ?");
-					pst.clearParameters();
-					pst.setInt(1,idpais);
-					rs2 = pst.executeQuery();
+					pst2 = con.prepareStatement("SELECT * FROM pais WHERE idpais = ?");
+					pst2.clearParameters();
+					pst2.setInt(1,idpais);
+					rs2 = pst2.executeQuery();
 					rs2.next();
 					f.setPaís(rs2.getString("nombre"),rs2.getString("idioma"));
-					valido = false;
 				}
-			}
 		} catch (java.sql.SQLException e) {
-			System.out.println("Error de SQL: "+e.getMessage());
+			System.err.println("Error de SQL: "+e.getMessage());
 		} finally {
 			if (con != null) {
 				con.close();
@@ -155,8 +168,8 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 			if (pst != null) {
 				pst.close();
 			}
-			if (st != null) {
-				st.close();
+			if (pst2 != null) {
+				pst2.close();
 			}
 			if (rs != null) {
 				rs.close();
@@ -192,7 +205,7 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 				lista.add(f);
 			}
 		} catch (java.sql.SQLException e) {
-			System.out.println("Error de SQL: "+e.getMessage());
+			System.err.println("Error de SQL: "+e.getMessage());
 		} finally {
 			if (con != null) {
 				con.close();
