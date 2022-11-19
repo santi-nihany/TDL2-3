@@ -1,8 +1,6 @@
-package tdl2.entrega3.components;
+package tdl2.entrega3.views;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.swing.*;
 
@@ -12,8 +10,8 @@ public class Configuracion extends JDialog {
 	private JLabel lblContra;
 	private JTextField tfUsuario;
 	private JPasswordField pf;
-	private static JDialog prueba;
 	private JButton btnGuardar;
+
 	public Configuracion() throws HeadlessException {
 		super();
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -31,9 +29,9 @@ public class Configuracion extends JDialog {
 		this.add(btnGuardar);
 		this.setTitle("Configuracion");
 		this.setLocationRelativeTo(null);
-		this.setSize(270,130);
+		this.setSize(270, 130);
 	}
-	
+
 	public JButton getBtnGuardar() {
 		return btnGuardar;
 	}
@@ -45,6 +43,5 @@ public class Configuracion extends JDialog {
 	public JPasswordField getPf() {
 		return pf;
 	}
-
 
 }

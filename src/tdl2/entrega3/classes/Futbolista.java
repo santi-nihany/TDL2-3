@@ -4,60 +4,74 @@ public class Futbolista {
 	private String nombre;
 	private String apellido;
 	private int docId;
-	private int teléfono;
+	private int telefono;
 	private String email;
-	private Pais país;
-	
+	private Pais pais;
+
 	public Futbolista() {
 		super();
 	}
-	public Futbolista(String nombre, String apellido, int docId, int teléfono, String email, Pais país) {
+
+	public Futbolista(String nombre, String apellido, int docId, int telefono, String email, Pais pais) {
 		super();
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.docId = docId;
-		this.teléfono = teléfono;
+		this.telefono = telefono;
 		this.email = email;
-		this.país = país;
+		this.pais = pais;
 	}
+
 	public String getNombre() {
 		return nombre;
 	}
+
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
+
 	public String getApellido() {
 		return apellido;
 	}
+
 	public void setApellido(String apellido) {
 		this.apellido = apellido;
 	}
+
 	public int getDocId() {
 		return docId;
 	}
+
 	public void setDocId(int docId) {
 		this.docId = docId;
 	}
-	public int getTeléfono() {
-		return teléfono;
+
+	public int getTelefono() {
+		return telefono;
 	}
-	public void setTeléfono(int teléfono) {
-		this.teléfono = teléfono;
+
+	public void setTelefono(int telefono) {
+		this.telefono = telefono;
 	}
+
 	public String getEmail() {
 		return email;
 	}
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public Pais getPaís() {
-		return país;
+
+	public Pais getPais() {
+		return pais;
 	}
-	public void setPaís(Pais país) {
-		this.país = país;
+
+	public void setPais(Pais pais) {
+		this.pais = pais;
 	}
-	public void setPaís(String nombre, String idioma) {
-		Pais p = new Pais(nombre,idioma);
-		this.país = p;
+
+	public void setPais(String nombre, String idioma) {
+		Pais p = new Pais(nombre, idioma);
+		this.pais = p;
 	}
 }
