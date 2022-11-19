@@ -12,7 +12,8 @@ public class Configuracion extends JDialog {
 	private JLabel lblContra;
 	private JTextField tfUsuario;
 	private JPasswordField pf;
-	public JButton btnGuardar;
+	private static JDialog prueba;
+	private JButton btnGuardar;
 	public Configuracion() throws HeadlessException {
 		super();
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -31,7 +32,19 @@ public class Configuracion extends JDialog {
 		this.setTitle("Configuracion");
 		this.setLocationRelativeTo(null);
 		this.setSize(270,130);
-		
 	}
+	
+	public JButton getBtnGuardar() {
+		return btnGuardar;
+	}
+
+	public JTextField getTfUsuario() {
+		return tfUsuario;
+	}
+
+	public JPasswordField getPf() {
+		return pf;
+	}
+
 
 }

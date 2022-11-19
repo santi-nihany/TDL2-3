@@ -6,7 +6,6 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -22,7 +21,7 @@ public class MainFrame extends JFrame {
 		 this.setLocationRelativeTo(null);
 		 // Otras ventanas
 		 Configuracion conf = new Configuracion();
-		 conf.btnGuardar.addMouseListener(new MouseAdapter() {
+		 conf.getBtnGuardar().addMouseListener(new MouseAdapter() {
 	            public void mouseClicked(MouseEvent e) {
 	            	conf.setVisible(false);
 	                }
@@ -31,13 +30,13 @@ public class MainFrame extends JFrame {
 		 panel = new JPanel();
 		 panel.setLayout(new BorderLayout());
 		 
-		 // subPanel NORTE
-		 JPanel subPanel = new JPanel();
-		 GridLayout grid= new GridLayout(2,4);
-		 grid.setHgap(15);
-		 subPanel.setLayout(grid);
-		 subPanel.add(new JPanel());
-		 subPanel.add(new JPanel());
+		// subPanel NORTE
+		JPanel subPanel = new JPanel();
+		GridLayout grid= new GridLayout(2,4);
+		grid.setHgap(15);
+		subPanel.setLayout(grid);
+		subPanel.add(new JPanel());
+		subPanel.add(new JPanel());
 		btnConf = new JButton("Configuracion");
 		btnConf.addMouseListener(new MouseAdapter() {
 	           public void mouseClicked(MouseEvent e) {
@@ -78,13 +77,7 @@ public class MainFrame extends JFrame {
 		 subPanel.add(new JButton("SIN DEFINIR"));
 		 subPanel.add(new JButton("SIN DEFINIR"));
 		 panel.add(subPanel, BorderLayout.CENTER);
-		 
-		 
 		 this.add(panel);
-		 this.setVisible(true);
 	} 
 
-	public static void main(String[] args) {
-		MainFrame app = new MainFrame();
-	}
 }
