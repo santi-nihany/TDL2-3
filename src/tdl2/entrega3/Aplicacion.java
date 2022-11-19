@@ -14,29 +14,10 @@ public class Aplicacion {
 
 	public static void main(String[] args) {
 		//Probando interfaces
-		//Configuracion conf = new Configuracion();
-		//conf.setVisible(true);
-		
-		/*MainFrame panel = new MainFrame();
+		MainFrame panel = new MainFrame();
 		panel.setVisible(true);
-		*/
-		FutbolistaDAOjdbc fd = new FutbolistaDAOjdbc();
-		Futbolista f = new Futbolista("pepe","perez",44,909090,"asd@asd",new Pais("argentina","esp"));
-		try {
-			/*List<Futbolista> l = fd.cargar();
-			while (!l.isEmpty()) {
-				System.out.println(l.get(0).getNombre());
-				l.remove(0);
-			}*/
-			//fd.guardar(f);
-			//if (fd.encontrar(f.getTeléfono()) != null) 
-			//	System.out.println("Se encontro!");
-			//fd.editar(f, 1);
-			fd.eliminar(f);
+		
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 	}
 
 }

@@ -13,7 +13,7 @@ public class Configuracion extends JDialog {
 	private JTextField tfUsuario;
 	private JPasswordField pf;
 	private static JDialog prueba;
-	public JButton btnGuardar;
+	private JButton btnGuardar;
 	public Configuracion() throws HeadlessException {
 		super();
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -28,16 +28,23 @@ public class Configuracion extends JDialog {
 		pf.setEchoChar('●');
 		this.add(pf);
 		btnGuardar = new JButton("Guardar");
-		btnGuardar.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-            	prueba.setVisible(false);
-                }
-		});
 		this.add(btnGuardar);
 		this.setTitle("Configuracion");
 		this.setLocationRelativeTo(null);
 		this.setSize(270,130);
-		
 	}
+	
+	public JButton getBtnGuardar() {
+		return btnGuardar;
+	}
+
+	public JTextField getTfUsuario() {
+		return tfUsuario;
+	}
+
+	public JPasswordField getPf() {
+		return pf;
+	}
+
 
 }
