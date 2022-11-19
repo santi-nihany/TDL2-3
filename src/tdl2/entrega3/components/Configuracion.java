@@ -27,6 +27,11 @@ public class Configuracion extends JDialog {
 		pf.setEchoChar('●');
 		this.add(pf);
 		btnGuardar = new JButton("Guardar");
+		/*btnGuardar.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+            	this.setVisible(false);
+                }
+		});*/
 		this.add(btnGuardar);
 		this.setTitle("Configuracion");
 		this.setLocationRelativeTo(null);
