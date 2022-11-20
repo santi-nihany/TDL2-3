@@ -31,6 +31,7 @@ public class MainFrame extends JFrame {
 				futbolistasView.setVisible(false);
 			}
 		});
+
 		// Panel General NORTE-CENTRO
 		panel = new JPanel();
 		panel.setLayout(new BorderLayout());

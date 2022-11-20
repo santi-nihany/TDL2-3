@@ -32,6 +32,7 @@ public class Futbolistas extends JDialog {
 		// Dialog
 		this.setTitle("Futbolistas");
 		this.setSize(800, 400);
+		this.setLocationRelativeTo(null);
 
 		// Panel principal
 		panel.setLayout(new BorderLayout());
@@ -63,7 +64,6 @@ public class Futbolistas extends JDialog {
 
 		try {
 			List<Futbolista> lista = futDAO.cargar();
-			System.out.println(lista);
 			for (Futbolista f : lista) {
 				Object[] fila = { f.getID(), f.getNombre(), f.getApellido(), "EDITAR", "ELIMINAR" };
 				modelo.addRow(fila);
@@ -71,6 +71,7 @@ public class Futbolistas extends JDialog {
 		} catch (SQLException e) {
 			System.err.println("Error de SQL: " + e.getMessage());
 		}
+
 		tabla.setModel(modelo);
 		tabla.getColumn("EDITAR").setCellRenderer(new ButtonRenderer());
 		tabla.getColumn("EDITAR").setCellEditor(new ButtonEditor(new JCheckBox()));
@@ -82,24 +83,57 @@ public class Futbolistas extends JDialog {
 		subPanel.add(new JScrollPane(tabla));
 		panel.add(subPanel, BorderLayout.CENTER);
 
-		editarFutbView = new IngresarFutbolista("EDITAR FUTBOLISTA");
+		Eliminar eliminarView = new Eliminar();
 
 		tableButton.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
-						if (tabla.getSelectedColumn() == 4) {
-							String numberIdString = (tabla.getValueAt(tabla.getSelectedRow(), 0)).toString();
-							int numberId = Integer.parseInt(numberIdString);
-							try {
-								Futbolista f = futDAO.encontrar(numberId);
-								futDAO.eliminar(f);
-							} catch (SQLException e) {
-								System.err.println("Error de SQL: " + e.getMessage());
+						// obtengo id del futbolista
+						String numberIdString = (tabla.getValueAt(tabla.getSelectedRow(), 0)).toString();
+						int numberId = Integer.parseInt(numberIdString);
 
-							}
+						// COLUMNA ELIMINAR
+						if (tabla.getSelectedColumn() == 4) {
+							// activo vista eliminar
+							eliminarView.setVisible(true);
+							// SELECCIONA: SI
+							eliminarView.getBtnYes().addMouseListener(new MouseAdapter() {
+								public void mouseClicked(MouseEvent e) {
+									// desactivo vista eliminar
+									eliminarView.setVisible(false);
+									// ELIMINO FUTBOLISTA DE BD Y DE LA TABLA
+									try {
+										futDAO = FactoryDAO.getFutbolistaDAO();
+										Futbolista f = futDAO.encontrar(numberId);
+										System.out.println(f.getNombre());
+										futDAO = FactoryDAO.getFutbolistaDAO();
+										futDAO.eliminar(f);
+										modelo.removeRow(tabla.getSelectedRow());
+									} catch (SQLException error) {
+										System.err.println("Error de SQL: " + error.getMessage());
+									}
+								}
+							});
+							// SELECCIONA: NO
+							eliminarView.getBtnNo().addMouseListener(new MouseAdapter() {
+								public void mouseClicked(MouseEvent e) {
+									eliminarView.setVisible(false);
+								}
+							});
 
 						}
+						// COLUMNA EDITAR
 						if (tabla.getSelectedColumn() == 3) {
+							// FUTBOLISTA SELECCIONADO
+							try {
+								futDAO = FactoryDAO.getFutbolistaDAO();
+								Futbolista f = futDAO.encontrar(numberId);
+								editarFutbView = new IngresarFutbolista("EDITAR FUTBOLISTA", f.getNombre(),
+										f.getApellido(), f.getEmail(), Integer.toString(f.getTelefono()),
+										f.getPais().getNombre());
+							} catch (SQLException error) {
+								System.err.println("Error de SQL: " + error.getMessage());
+							}
 							editarFutbView.setVisible(true);
 						}
 					}
@@ -141,8 +175,13 @@ public class Futbolistas extends JDialog {
 		}
 	}
 
+	// BOTONES
 	public JButton getBtnVolver() {
 		return btnVolver;
+	}
+
+	public JButton getBtnEliminar() {
+		return tableButton;
 	}
 
 	public static void main(String[] args) {

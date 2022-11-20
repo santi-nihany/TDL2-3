@@ -7,7 +7,7 @@ import java.util.List;
 import tdl2.entrega3.DAO.interfaces.FutbolistaDAO;
 import tdl2.entrega3.classes.Futbolista;
 import tdl2.entrega3.classes.Pais;
-import tdl2.entrega3.sql.MiConexion;
+import tdl2.entrega3.sql.MyConnection;
 
 public class FutbolistaDAOjdbc implements FutbolistaDAO {
 
@@ -25,7 +25,7 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 			if (this.encontrar(f.getID()) != null) {
 				System.out.println("Ya existe el futbolista");
 			} else {
-				con = MiConexion.getCon("root", "");
+				con = MyConnection.getCon("root", "");
 				// FALTA AGREGAR EL PAIS SI NO EXISTE!
 				pst2 = con.prepareStatement("SELECT idpais,nombre FROM pais WHERE nombre =?");
 				pst2.clearParameters();
@@ -71,23 +71,26 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 		Connection con = null;
 		PreparedStatement pst = null;
 		try {
-			con = MiConexion.getCon("root", "");
+			con = MyConnection.getCon("root", "");
 			pst = con.prepareStatement("DELETE FROM futbolista WHERE idfutbolista = ?");
 			pst.clearParameters();
 			pst.setInt(1, f.getID());
 			pst.executeUpdate();
 			System.out.println("Eliminado exitosamente");
+			con.close();
+			pst.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.err.println("Error de SQL: " + e.getMessage());
-		} finally {
-			if (con != null) {
-				con.close();
-			}
-			if (pst != null) {
-				pst.close();
-			}
 		}
+		// finally {
+		// if (con != null) {
+		// con.close();
+		// }
+		// if (pst != null) {
+		// pst.close();
+		// }
+		// }
 	}
 
 	@Override
@@ -97,7 +100,7 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 		PreparedStatement pst = null;
 		PreparedStatement pst2 = null;
 		try {
-			con = MiConexion.getCon("root", "");
+			con = MyConnection.getCon("root", "");
 			pst = con.prepareStatement("SELECT * FROM pais WHERE nombre =?");
 			pst.clearParameters();
 			pst.setString(1, f.getPais().getNombre());
@@ -142,7 +145,7 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 		PreparedStatement pst2 = null;
 		ResultSet rs2 = null;
 		try {
-			con = MiConexion.getCon("root", "");
+			con = MyConnection.getCon("root", "");
 			pst = con.prepareStatement("SELECT * FROM futbolista WHERE idfutbolista =?");
 			pst.clearParameters();
 			pst.setInt(1, id);
@@ -150,7 +153,7 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 			rs.next();
 			if (rs.getInt("idfutbolista") == id) {
 				f = new Futbolista();
-				f.setID(rs.getInt("ID"));
+				f.setID(rs.getInt("idfutbolista"));
 				f.setNombre(rs.getString("nombre"));
 				f.setApellido(rs.getString("apellido"));
 				f.setDocId(rs.getInt("docIdentidad"));
@@ -164,25 +167,31 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 				rs2.next();
 				f.setPais(rs2.getString("nombre"), rs2.getString("idioma"));
 			}
+			con.close();
+			pst.close();
+			pst2.close();
+			rs.close();
+			rs2.close();
 		} catch (java.sql.SQLException e) {
 			System.err.println("Error de SQL: " + e.getMessage());
-		} finally {
-			if (con != null) {
-				con.close();
-			}
-			if (pst != null) {
-				pst.close();
-			}
-			if (pst2 != null) {
-				pst2.close();
-			}
-			if (rs != null) {
-				rs.close();
-			}
-			if (rs2 != null) {
-				rs2.close();
-			}
 		}
+		// finally {
+		// if (con != null) {
+		// con.close();
+		// }
+		// if (pst != null) {
+		// pst.close();
+		// }
+		// if (pst2 != null) {
+		// pst2.close();
+		// }
+		// if (rs != null) {
+		// rs.close();
+		// }
+		// if (rs2 != null) {
+		// rs2.close();
+		// }
+		// }
 		return f;
 	}
 
@@ -195,7 +204,7 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 		PreparedStatement pst = null;
 		ResultSet rs2 = null;
 		try {
-			con = MiConexion.getCon("root", "");
+			con = MyConnection.getCon("root", "");
 			st = con.createStatement();
 			rs = st.executeQuery("SELECT * FROM futbolista");
 			while (rs.next()) {
