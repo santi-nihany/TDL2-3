@@ -22,7 +22,7 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 		PreparedStatement pst2 = null;
 		ResultSet rs = null;
 		try {
-			if (this.encontrar(f.getTelefono()) != null) {
+			if (this.encontrar(f.getID()) != null) {
 				System.out.println("Ya existe el futbolista");
 			} else {
 				con = MiConexion.getCon("root", "");
@@ -34,13 +34,15 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 				rs.next();
 				int paisID = rs.getInt("idpais");
 				pst = con.prepareStatement(
-						"INSERT INTO futbolista (nombre,apellido,docIdentidad,telefono,email,idpais) VALUES(?,?,?,?,?,?)");
-				pst.setString(1, f.getNombre());
-				pst.setString(2, f.getApellido());
-				pst.setInt(3, f.getDocId());
-				pst.setInt(4, f.getTelefono());
-				pst.setString(5, f.getEmail());
-				pst.setInt(6, paisID);
+						"INSERT INTO futbolista (idfutbolista,nombre,apellido,docIdentidad,telefono,email,idpais) VALUES(?,?,?,?,?,?,?)");
+
+				pst.setInt(1, f.getID());
+				pst.setString(2, f.getNombre());
+				pst.setString(3, f.getApellido());
+				pst.setInt(4, f.getDocId());
+				pst.setInt(5, f.getTelefono());
+				pst.setString(6, f.getEmail());
+				pst.setInt(7, paisID);
 				pst.executeUpdate();
 				System.out.println("Futbolista agregado con exito.");
 			}
@@ -70,9 +72,9 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 		PreparedStatement pst = null;
 		try {
 			con = MiConexion.getCon("root", "");
-			pst = con.prepareStatement("DELETE FROM futbolista WHERE telefono = ?");
+			pst = con.prepareStatement("DELETE FROM futbolista WHERE idfutbolista = ?");
 			pst.clearParameters();
-			pst.setInt(1, f.getTelefono());
+			pst.setInt(1, f.getID());
 			pst.executeUpdate();
 			System.out.println("Eliminado exitosamente");
 		} catch (SQLException e) {
@@ -132,7 +134,7 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 	}
 
 	@Override
-	public Futbolista encontrar(int x) throws SQLException {
+	public Futbolista encontrar(int id) throws SQLException {
 		Futbolista f = null;
 		Connection con = null;
 		ResultSet rs = null;
@@ -141,13 +143,14 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 		ResultSet rs2 = null;
 		try {
 			con = MiConexion.getCon("root", "");
-			pst = con.prepareStatement("SELECT * FROM futbolista WHERE telefono =?");
+			pst = con.prepareStatement("SELECT * FROM futbolista WHERE idfutbolista =?");
 			pst.clearParameters();
-			pst.setInt(1, x);
+			pst.setInt(1, id);
 			rs = pst.executeQuery();
 			rs.next();
-			if (rs.getInt("telefono") == x) {
+			if (rs.getInt("idfutbolista") == id) {
 				f = new Futbolista();
+				f.setID(rs.getInt("ID"));
 				f.setNombre(rs.getString("nombre"));
 				f.setApellido(rs.getString("apellido"));
 				f.setDocId(rs.getInt("docIdentidad"));
@@ -203,7 +206,8 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 				rs2 = pst.executeQuery();
 				rs2.next();
 				Pais p = new Pais(rs2.getString("nombre"), rs2.getString("idioma"));
-				Futbolista f = new Futbolista(rs.getString("nombre"), rs.getString("apellido"),
+				Futbolista f = new Futbolista(rs.getInt("idfutbolista"), rs.getString("nombre"),
+						rs.getString("apellido"),
 						rs.getInt("docIdentidad"), rs.getInt("telefono"), rs.getString("email"), p);
 				lista.add(f);
 			}

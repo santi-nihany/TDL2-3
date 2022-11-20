@@ -4,13 +4,14 @@ import java.util.List;
 import tdl2.entrega3.classes.Pais;
 
 public interface PaisDAO {
-	List<Pais> cargar();
 
-	void guardar(Pais p);
+	public List<Pais> cargar();
 
-	void eliminar(Pais p);
+	public void eliminar(Pais p);
 
-	void editar(Pais p);
+	public Pais encontrar(int id);
 
-	Pais encontrar(String nombre);
+	public Pais encontrar(String n);
+
+	public Pais guardar(Pais p);
 }

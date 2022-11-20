@@ -1,6 +1,7 @@
 package tdl2.entrega3.classes;
 
 public class Futbolista {
+	private int ID;
 	private String nombre;
 	private String apellido;
 	private int docId;
@@ -12,14 +13,23 @@ public class Futbolista {
 		super();
 	}
 
-	public Futbolista(String nombre, String apellido, int docId, int telefono, String email, Pais pais) {
+	public Futbolista(int ID, String nombre, String apellido, int docId, int telefono, String email, Pais pais) {
 		super();
+		this.ID = ID;
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.docId = docId;
 		this.telefono = telefono;
 		this.email = email;
 		this.pais = pais;
+	}
+
+	public int getID() {
+		return ID;
+	}
+
+	public void setID(int ID) {
+		this.ID = ID;
 	}
 
 	public String getNombre() {

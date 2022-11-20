@@ -26,6 +26,11 @@ public class MainFrame extends JFrame {
 				confView.setVisible(false);
 			}
 		});
+		futbolistasView.getBtnVolver().addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				futbolistasView.setVisible(false);
+			}
+		});
 		// Panel General NORTE-CENTRO
 		panel = new JPanel();
 		panel.setLayout(new BorderLayout());
