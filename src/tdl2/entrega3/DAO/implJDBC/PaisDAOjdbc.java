@@ -5,7 +5,7 @@ import java.util.*;
 
 import tdl2.entrega3.DAO.interfaces.PaisDAO;
 import tdl2.entrega3.classes.Pais;
-import tdl2.entrega3.sql.MiConexion;
+import tdl2.entrega3.sql.MyConnection;
 
 public class PaisDAOjdbc implements PaisDAO {
 
@@ -13,45 +13,154 @@ public class PaisDAOjdbc implements PaisDAO {
 		super();
 	}
 
-	public List<Pais> cargar() {
-		List<Pais> lista = new LinkedList<Pais>();
+	@Override
+	public void guardar(Pais p) throws SQLException {
 		Connection con = null;
-
-		return null;
-	}
-
-	public void eliminar(Pais p) {
-
-	}
-
-	public Pais encontrar(int id) {
-		Pais p = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
 		try {
-			Connection con = MiConexion.getCon("root", "");
-			PreparedStatement pst = con.prepareStatement("SELECT * FROM pais WHERE idpais = ?");
-			pst.clearParameters();
-			pst.setInt(1, id);
-			ResultSet rs = pst.executeQuery();
-			if (rs.next() == true) {
-				p = new Pais();
-				p.setIdioma(rs.getString(1));
-				p.setNombre(rs.getString(2));
+			if (this.encontrar(p.getNombre()) != null) {
+				System.out.println("Ya existe el pais");
+			} else {
+				con = MyConnection.getCon("root", "");
+				pst = con.prepareStatement(
+						"INSERT INTO Pais(nombre,idioma) VALUES(?,?,?,?,?,?,?)");
+				pst.setString(1, p.getNombre());
+				pst.setString(2, p.getIdioma());
+				pst.executeUpdate();
+				System.out.println("Pais agregado con exito.");
 			}
-			rs.close();
-			pst.close();
-			con.close();
+
+		} catch (SQLException e) {
+			System.err.println("Error de SQL: " + e.getMessage());
+		} finally {
+			if (con != null) {
+				con.close();
+			}
+			if (pst != null) {
+				pst.close();
+			}
+			if (rs != null) {
+				rs.close();
+			}
+		}
+
+	}
+
+	@Override
+	public void eliminar(Pais p) throws SQLException {
+		Connection con = null;
+		PreparedStatement pst = null;
+		try {
+			con = MyConnection.getCon("root", "");
+			pst = con.prepareStatement("DELETE FROM pais WHERE nombre= ?");
+			pst.clearParameters();
+			pst.setString(1, p.getNombre());
+			pst.executeUpdate();
+			System.out.println("Eliminado exitosamente");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Error de SQL: " + e.getMessage());
+		} finally {
+			if (con != null) {
+				con.close();
+			}
+			if (pst != null) {
+				pst.close();
+			}
+		}
+	}
+
+	@Override
+	public void editar(Pais p, String nombre) throws SQLException {
+		Connection con = null;
+		ResultSet rs = null;
+		PreparedStatement pst = null;
+		try {
+			con = MyConnection.getCon("root", "");
+			pst = con.prepareStatement(
+					"UPDATE Pais SET nombre=? ,  idioma=? WHERE nombre=?");
+			pst.clearParameters();
+			pst.setString(1, p.getNombre());
+			pst.setString(2, p.getIdioma());
+			pst.setString(3, nombre);
+			pst.executeUpdate();
+			System.out.println("Editado exitosamente.");
+		} catch (SQLException e) {
+			System.err.println("Error de SQL: " + e.getMessage());
+		} finally {
+			if (con != null) {
+				con.close();
+			}
+			if (pst != null) {
+				pst.close();
+			}
+			if (rs != null) {
+				rs.close();
+			}
+		}
+	}
+
+	@Override
+	public Pais encontrar(String nombre) throws SQLException {
+		Pais p = null;
+		Connection con = null;
+		ResultSet rs = null;
+		PreparedStatement pst = null;
+		try {
+			con = MyConnection.getCon("root", "");
+			pst = con.prepareStatement("SELECT * FROM pais WHERE nombre=?");
+			pst.clearParameters();
+			pst.setString(1, nombre);
+			rs = pst.executeQuery();
+			rs.next();
+			if (rs.getString("nombre") == nombre) {
+				p = new Pais();
+				p.setNombre(rs.getString("nombre"));
+				p.setIdioma(rs.getString("idioma"));
+			}
 		} catch (java.sql.SQLException e) {
-			System.out.println("Error de SQL: " + e.getMessage());
+			System.err.println("Error de SQL: " + e.getMessage());
+		} finally {
+			if (con != null) {
+				con.close();
+			}
+			if (pst != null) {
+				pst.close();
+			}
 		}
 		return p;
 	}
 
-	public Pais encontrar(String n) {
-		return null;
-	}
-
-	public Pais guardar(Pais p) {
-		return null;
+	@Override
+	public List<Pais> cargar() throws SQLException {
+		List<Pais> lista = new LinkedList<Pais>();
+		Connection con = null;
+		Statement st = null;
+		ResultSet rs = null;
+		PreparedStatement pst = null;
+		try {
+			con = MyConnection.getCon("root", "");
+			st = con.createStatement();
+			rs = st.executeQuery("SELECT * FROM pais");
+			while (rs.next()) {
+				Pais p = new Pais(rs.getString("nombre"), rs.getString("idioma"));
+				lista.add(p);
+			}
+		} catch (java.sql.SQLException e) {
+			System.err.println("Error de SQL: " + e.getMessage());
+		} finally {
+			if (con != null) {
+				con.close();
+			}
+			if (pst != null) {
+				pst.close();
+			}
+			if (rs != null) {
+				rs.close();
+			}
+		}
+		return lista;
 	}
 
 }

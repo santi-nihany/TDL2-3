@@ -77,20 +77,17 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 			pst.setInt(1, f.getID());
 			pst.executeUpdate();
 			System.out.println("Eliminado exitosamente");
-			con.close();
-			pst.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.err.println("Error de SQL: " + e.getMessage());
+		} finally {
+			if (con != null) {
+				con.close();
+			}
+			if (pst != null) {
+				pst.close();
+			}
 		}
-		// finally {
-		// if (con != null) {
-		// con.close();
-		// }
-		// if (pst != null) {
-		// pst.close();
-		// }
-		// }
 	}
 
 	@Override
@@ -167,31 +164,25 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 				rs2.next();
 				f.setPais(rs2.getString("nombre"), rs2.getString("idioma"));
 			}
-			con.close();
-			pst.close();
-			pst2.close();
-			rs.close();
-			rs2.close();
 		} catch (java.sql.SQLException e) {
 			System.err.println("Error de SQL: " + e.getMessage());
+		} finally {
+			if (con != null) {
+				con.close();
+			}
+			if (pst != null) {
+				pst.close();
+			}
+			if (pst2 != null) {
+				pst2.close();
+			}
+			if (rs != null) {
+				rs.close();
+			}
+			if (rs2 != null) {
+				rs2.close();
+			}
 		}
-		// finally {
-		// if (con != null) {
-		// con.close();
-		// }
-		// if (pst != null) {
-		// pst.close();
-		// }
-		// if (pst2 != null) {
-		// pst2.close();
-		// }
-		// if (rs != null) {
-		// rs.close();
-		// }
-		// if (rs2 != null) {
-		// rs2.close();
-		// }
-		// }
 		return f;
 	}
 

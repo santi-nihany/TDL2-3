@@ -1,17 +1,18 @@
 package tdl2.entrega3.DAO.interfaces;
 
 import java.util.List;
+import java.sql.SQLException;
 import tdl2.entrega3.classes.Pais;
 
 public interface PaisDAO {
 
-	public List<Pais> cargar();
+	List<Pais> cargar() throws SQLException;
 
-	public void eliminar(Pais p);
+	void guardar(Pais f) throws SQLException;
 
-	public Pais encontrar(int id);
+	void eliminar(Pais f) throws SQLException;
 
-	public Pais encontrar(String n);
+	void editar(Pais f, String nombre) throws SQLException;
 
-	public Pais guardar(Pais p);
+	Pais encontrar(String name) throws SQLException;
 }
