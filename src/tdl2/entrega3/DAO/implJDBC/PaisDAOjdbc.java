@@ -23,10 +23,11 @@ public class PaisDAOjdbc implements PaisDAO {
 			} else {
 				con = MyConnection.getCon("root", "");
 				pst = con.prepareStatement(
-						"INSERT INTO pais (nombre,idioma) VALUES(?,?)");
+						"INSERT INTO pais (idpais,nombre,idioma) VALUES(?,?,?)");
 				pst.clearParameters();
-				pst.setString(1, p.getNombre());
-				pst.setString(2, p.getIdioma());
+				pst.setInt(1, p.getId());
+				pst.setString(2, p.getNombre());
+				pst.setString(3, p.getIdioma());
 				pst.executeUpdate();
 				System.out.println("Pais agregado con exito.");
 			}
@@ -50,9 +51,9 @@ public class PaisDAOjdbc implements PaisDAO {
 		PreparedStatement pst = null;
 		try {
 			con = MyConnection.getCon("root", "");
-			pst = con.prepareStatement("DELETE FROM pais WHERE nombre= ?");
+			pst = con.prepareStatement("DELETE FROM pais WHERE idpais= ?");
 			pst.clearParameters();
-			pst.setString(1, p.getNombre());
+			pst.setInt(1, p.getId());
 			pst.executeUpdate();
 			System.out.println("Eliminado exitosamente");
 		} catch (SQLException e) {
@@ -75,7 +76,7 @@ public class PaisDAOjdbc implements PaisDAO {
 		try {
 			con = MyConnection.getCon("root", "");
 			pst = con.prepareStatement(
-					"UPDATE Pais SET nombre=? ,  idioma=? WHERE idpais=?");
+					"UPDATE pais SET nombre=? , idioma=? WHERE idpais=?");
 			pst.clearParameters();
 			pst.setString(1, p.getNombre());
 			pst.setString(2, p.getIdioma());
@@ -109,6 +110,7 @@ public class PaisDAOjdbc implements PaisDAO {
 
 			if (rs.next()) {
 				p = new Pais();
+				p.setId(rs.getInt("idpais"));
 				p.setNombre(rs.getString("nombre"));
 				p.setIdioma(rs.getString("idioma"));
 			}
@@ -137,7 +139,7 @@ public class PaisDAOjdbc implements PaisDAO {
 			st = con.createStatement();
 			rs = st.executeQuery("SELECT * FROM pais");
 			while (rs.next()) {
-				Pais p = new Pais(rs.getString("nombre"), rs.getString("idioma"));
+				Pais p = new Pais(rs.getInt("idpais"), rs.getString("nombre"), rs.getString("idioma"));
 				lista.add(p);
 			}
 		} catch (java.sql.SQLException e) {

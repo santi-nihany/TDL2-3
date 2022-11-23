@@ -80,8 +80,8 @@ public class Futbolista {
 		this.pais = pais;
 	}
 
-	public void setPais(String nombre, String idioma) {
-		Pais p = new Pais(nombre, idioma);
+	public void setPais(int id, String nombre, String idioma) {
+		Pais p = new Pais(id, nombre, idioma);
 		this.pais = p;
 	}
 }

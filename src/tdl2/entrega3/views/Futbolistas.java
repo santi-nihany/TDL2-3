@@ -36,6 +36,7 @@ public class Futbolistas extends JDialog {
 		this.setTitle("Futbolistas");
 		this.setSize(800, 400);
 		this.setLocationRelativeTo(null);
+		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
 		// Panel principal
 		panel.setLayout(new BorderLayout());
@@ -57,6 +58,24 @@ public class Futbolistas extends JDialog {
 		panel.add(subPanel, BorderLayout.NORTH);
 
 		/// Funcionalidad de crearFButton
+		setCrearFButton();
+
+		// TABLA - CENTRO
+		setTablaJugadores(datos, titulos);
+
+		subPanel = new JPanel();
+		subPanel.add(new JScrollPane(tabla));
+		panel.add(subPanel, BorderLayout.CENTER);
+
+		// setear evento table button
+		setTableButton();
+
+		this.add(panel);
+
+	}
+
+	// BOTON CREAR JUGADOR
+	private void setCrearFButton() {
 		crearFButton.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				crearFutbView = new IngresarFutbolista("NUEVO FUTBOLISTA");
@@ -99,13 +118,65 @@ public class Futbolistas extends JDialog {
 			}
 		});
 
-		// TABLA - CENTRO
-		setTablaJugadores(datos, titulos);
+	}
 
-		subPanel = new JPanel();
-		subPanel.add(new JScrollPane(tabla));
-		panel.add(subPanel, BorderLayout.CENTER);
+	// CONFIGURACION DEL BOTON DE LA TABLA
+	class ButtonRenderer extends JButton implements TableCellRenderer {
+		public ButtonRenderer() {
+			setOpaque(true);
+		}
 
+		public Component getTableCellRendererComponent(JTable table, Object value,
+				boolean isSelected, boolean hasFocus, int row, int column) {
+			setText((value == null) ? "Modify" : value.toString());
+			return this;
+		}
+	}
+
+	class ButtonEditor extends DefaultCellEditor {
+		private String label;
+
+		public ButtonEditor(JCheckBox checkBox) {
+			super(checkBox);
+		}
+
+		public Component getTableCellEditorComponent(JTable table, Object value,
+				boolean isSelected, int row, int column) {
+			label = (value == null) ? "Modify" : value.toString();
+			tableButton.setText(label);
+			return tableButton;
+		}
+
+		public Object getCellEditorValue() {
+			return new String(label);
+		}
+	}
+
+	// setTabla
+	private void setTablaJugadores(Object[][] datos, String[] titulos) {
+		FutbolistasTableModel m = new FutbolistasTableModel(datos, titulos);
+		FutbolistaDAOjdbc futDAO = FactoryDAO.getFutbolistaDAO();
+
+		try {
+			List<Futbolista> lista = futDAO.cargar();
+			for (Futbolista f : lista) {
+				Object[] fila = { f.getID(), f.getNombre(), f.getApellido(), "EDITAR", "ELIMINAR" };
+				m.addRow(fila);
+			}
+		} catch (SQLException e) {
+			System.err.println("Error de SQL: " + e.getMessage());
+		}
+		tabla.setModel(m);
+		tabla.getColumn("EDITAR").setCellRenderer(new ButtonRenderer());
+		tabla.getColumn("EDITAR").setCellEditor(new ButtonEditor(new JCheckBox()));
+
+		tabla.getColumn("ELIMINAR")
+				.setCellEditor(new ButtonEditor(new JCheckBox()));
+		tabla.getColumn("ELIMINAR").setCellRenderer(new ButtonRenderer());
+	}
+
+	// set Table Button
+	private void setTableButton() {
 		tableButton.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
@@ -202,63 +273,6 @@ public class Futbolistas extends JDialog {
 					}
 				});
 
-		this.add(panel);
-
-	}
-
-	// CONFIGURACION DEL BOTON DE LA TABLA
-	class ButtonRenderer extends JButton implements TableCellRenderer {
-		public ButtonRenderer() {
-			setOpaque(true);
-		}
-
-		public Component getTableCellRendererComponent(JTable table, Object value,
-				boolean isSelected, boolean hasFocus, int row, int column) {
-			setText((value == null) ? "Modify" : value.toString());
-			return this;
-		}
-	}
-
-	class ButtonEditor extends DefaultCellEditor {
-		private String label;
-
-		public ButtonEditor(JCheckBox checkBox) {
-			super(checkBox);
-		}
-
-		public Component getTableCellEditorComponent(JTable table, Object value,
-				boolean isSelected, int row, int column) {
-			label = (value == null) ? "Modify" : value.toString();
-			tableButton.setText(label);
-			return tableButton;
-		}
-
-		public Object getCellEditorValue() {
-			return new String(label);
-		}
-	}
-
-	// setTabla
-	public void setTablaJugadores(Object[][] datos, String[] titulos) {
-		FutbolistasTableModel m = new FutbolistasTableModel(datos, titulos);
-		FutbolistaDAOjdbc futDAO = FactoryDAO.getFutbolistaDAO();
-
-		try {
-			List<Futbolista> lista = futDAO.cargar();
-			for (Futbolista f : lista) {
-				Object[] fila = { f.getID(), f.getNombre(), f.getApellido(), "EDITAR", "ELIMINAR" };
-				m.addRow(fila);
-			}
-		} catch (SQLException e) {
-			System.err.println("Error de SQL: " + e.getMessage());
-		}
-		tabla.setModel(m);
-		tabla.getColumn("EDITAR").setCellRenderer(new ButtonRenderer());
-		tabla.getColumn("EDITAR").setCellEditor(new ButtonEditor(new JCheckBox()));
-
-		tabla.getColumn("ELIMINAR")
-				.setCellEditor(new ButtonEditor(new JCheckBox()));
-		tabla.getColumn("ELIMINAR").setCellRenderer(new ButtonRenderer());
 	}
 
 	// BOTONES

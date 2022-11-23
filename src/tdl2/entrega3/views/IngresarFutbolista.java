@@ -30,6 +30,7 @@ public class IngresarFutbolista extends JDialog {
 
     public IngresarFutbolista(String titulo) {
         super();
+        this.setLocationRelativeTo(null);
         this.setTitle(titulo);
         this.setLayout(new BorderLayout());
         lblError = new JLabel("Ingrese los datos");

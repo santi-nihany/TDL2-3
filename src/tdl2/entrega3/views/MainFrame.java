@@ -21,6 +21,8 @@ public class MainFrame extends JFrame {
 		// Otras ventanas
 		Configuracion confView = new Configuracion();
 		Futbolistas futbolistasView = new Futbolistas();
+		VentanaPais paisView = new VentanaPais();
+
 		confView.getBtnGuardar().addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				confView.setVisible(false);
@@ -29,6 +31,12 @@ public class MainFrame extends JFrame {
 		futbolistasView.getBtnVolver().addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				futbolistasView.setVisible(false);
+			}
+		});
+
+		paisView.getBtnVolver().addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				paisView.setVisible(false);
 			}
 		});
 
@@ -74,7 +82,13 @@ public class MainFrame extends JFrame {
 		});
 		subPanel.add(btnFutbolista);
 		// BOTON PAIS
-		subPanel.add(new JButton("PAIS"));
+		btnPais = new JButton("PAIS");
+		subPanel.add(btnPais);
+		btnPais.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				paisView.setVisible(true);
+			}
+		});
 		subPanel.add(new JButton("SIN DEFINIR"));
 		subPanel.add(new JButton("SIN DEFINIR"));
 		subPanel.add(new JButton("SIN DEFINIR"));

@@ -164,7 +164,7 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 					pst2.setInt(1, idpais);
 					rs2 = pst2.executeQuery();
 					rs2.next();
-					f.setPais(rs2.getString("nombre"), rs2.getString("idioma"));
+					f.setPais(rs2.getInt("idpais"), rs2.getString("nombre"), rs2.getString("idioma"));
 				}
 			}
 		} catch (java.sql.SQLException e) {
@@ -208,7 +208,7 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 				pst.setInt(1, idpais);
 				rs2 = pst.executeQuery();
 				rs2.next();
-				Pais p = new Pais(rs2.getString("nombre"), rs2.getString("idioma"));
+				Pais p = new Pais(rs2.getInt("idpais"), rs2.getString("nombre"), rs2.getString("idioma"));
 				Futbolista f = new Futbolista(rs.getInt("idfutbolista"), rs.getString("nombre"),
 						rs.getString("apellido"),
 						rs.getInt("docIdentidad"), rs.getInt("telefono"), rs.getString("email"), p);
