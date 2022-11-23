@@ -1,8 +1,15 @@
 package tdl2.entrega3.views;
 
 import java.awt.*;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.*;
+
+import tdl2.entrega3.DAO.FactoryDAO;
+import tdl2.entrega3.DAO.implJDBC.PaisDAOjdbc;
+import tdl2.entrega3.classes.Pais;
 
 public class IngresarFutbolista extends JDialog {
     private JLabel lblNombre;
@@ -18,6 +25,8 @@ public class IngresarFutbolista extends JDialog {
     private JTextField tfPais;
     private JButton btnGuardar;
     private JPanel panelCentral;
+    private JComboBox<String> cbPaises;
+    private String nombresPaises[];
 
     public IngresarFutbolista(String titulo) {
         super();
@@ -47,6 +56,8 @@ public class IngresarFutbolista extends JDialog {
         tfEmail = new JTextField();
         tfTelefono = new JTextField();
         tfPais = new JTextField();
+        nombresPaises = cargarPaises();
+        cbPaises = new JComboBox<String>(nombresPaises);
 
         panelCentral.add(lblNombre);
         panelCentral.add(tfNombre);
@@ -57,11 +68,31 @@ public class IngresarFutbolista extends JDialog {
         panelCentral.add(lblTelefono);
         panelCentral.add(tfTelefono);
         panelCentral.add(lblPais);
-        panelCentral.add(tfPais);
+        panelCentral.add(cbPaises);
 
         this.add(panelCentral, BorderLayout.CENTER);
         this.setLocationRelativeTo(null);
         this.setSize(300, 200);
+    }
+
+    public String[] cargarPaises() {
+        ArrayList<String> listaPaises = new ArrayList<String>();
+        PaisDAOjdbc paisDAO = FactoryDAO.getPaisDAO();
+        try {
+            List<Pais> lista = paisDAO.cargar();
+            for (Pais p : lista) {
+                listaPaises.add(p.getNombre());
+            }
+        } catch (SQLException e) {
+            System.err.println("Error de SQL: " + e.getMessage());
+        }
+        String[] arregloPaises = {};
+        arregloPaises = listaPaises.toArray(arregloPaises);
+        return arregloPaises;
+    }
+
+    public JComboBox<String> getCbPaises() {
+        return cbPaises;
     }
 
     public JButton getBtnGuardar() {
@@ -106,5 +137,9 @@ public class IngresarFutbolista extends JDialog {
 
     public void setTfPais(JTextField tfPais) {
         this.tfPais = tfPais;
+    }
+
+    public JLabel getLblError() {
+        return lblError;
     }
 }

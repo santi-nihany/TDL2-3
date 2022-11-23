@@ -17,14 +17,14 @@ public class PaisDAOjdbc implements PaisDAO {
 	public void guardar(Pais p) throws SQLException {
 		Connection con = null;
 		PreparedStatement pst = null;
-		ResultSet rs = null;
 		try {
 			if (this.encontrar(p.getNombre()) != null) {
 				System.out.println("Ya existe el pais");
 			} else {
 				con = MyConnection.getCon("root", "");
 				pst = con.prepareStatement(
-						"INSERT INTO Pais(nombre,idioma) VALUES(?,?,?,?,?,?,?)");
+						"INSERT INTO pais (nombre,idioma) VALUES(?,?)");
+				pst.clearParameters();
 				pst.setString(1, p.getNombre());
 				pst.setString(2, p.getIdioma());
 				pst.executeUpdate();
@@ -39,9 +39,6 @@ public class PaisDAOjdbc implements PaisDAO {
 			}
 			if (pst != null) {
 				pst.close();
-			}
-			if (rs != null) {
-				rs.close();
 			}
 		}
 
@@ -72,18 +69,17 @@ public class PaisDAOjdbc implements PaisDAO {
 	}
 
 	@Override
-	public void editar(Pais p, String nombre) throws SQLException {
+	public void editar(Pais p, int id) throws SQLException {
 		Connection con = null;
-		ResultSet rs = null;
 		PreparedStatement pst = null;
 		try {
 			con = MyConnection.getCon("root", "");
 			pst = con.prepareStatement(
-					"UPDATE Pais SET nombre=? ,  idioma=? WHERE nombre=?");
+					"UPDATE Pais SET nombre=? ,  idioma=? WHERE idpais=?");
 			pst.clearParameters();
 			pst.setString(1, p.getNombre());
 			pst.setString(2, p.getIdioma());
-			pst.setString(3, nombre);
+			pst.setInt(3, id);
 			pst.executeUpdate();
 			System.out.println("Editado exitosamente.");
 		} catch (SQLException e) {
@@ -94,9 +90,6 @@ public class PaisDAOjdbc implements PaisDAO {
 			}
 			if (pst != null) {
 				pst.close();
-			}
-			if (rs != null) {
-				rs.close();
 			}
 		}
 	}
@@ -113,8 +106,8 @@ public class PaisDAOjdbc implements PaisDAO {
 			pst.clearParameters();
 			pst.setString(1, nombre);
 			rs = pst.executeQuery();
-			rs.next();
-			if (rs.getString("nombre") == nombre) {
+
+			if (rs.next()) {
 				p = new Pais();
 				p.setNombre(rs.getString("nombre"));
 				p.setIdioma(rs.getString("idioma"));

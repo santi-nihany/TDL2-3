@@ -147,22 +147,25 @@ public class FutbolistaDAOjdbc implements FutbolistaDAO {
 			pst.clearParameters();
 			pst.setInt(1, id);
 			rs = pst.executeQuery();
-			rs.next();
-			if (rs.getInt("idfutbolista") == id) {
-				f = new Futbolista();
-				f.setID(rs.getInt("idfutbolista"));
-				f.setNombre(rs.getString("nombre"));
-				f.setApellido(rs.getString("apellido"));
-				f.setDocId(rs.getInt("docIdentidad"));
-				f.setTelefono(rs.getInt("telefono"));
-				f.setEmail(rs.getString("email"));
-				int idpais = rs.getInt("idpais");
-				pst2 = con.prepareStatement("SELECT * FROM pais WHERE idpais = ?");
-				pst2.clearParameters();
-				pst2.setInt(1, idpais);
-				rs2 = pst2.executeQuery();
-				rs2.next();
-				f.setPais(rs2.getString("nombre"), rs2.getString("idioma"));
+
+			if (rs.next()) {
+
+				if (rs.getInt("idfutbolista") == id) {
+					f = new Futbolista();
+					f.setID(rs.getInt("idfutbolista"));
+					f.setNombre(rs.getString("nombre"));
+					f.setApellido(rs.getString("apellido"));
+					f.setDocId(rs.getInt("docIdentidad"));
+					f.setTelefono(rs.getInt("telefono"));
+					f.setEmail(rs.getString("email"));
+					int idpais = rs.getInt("idpais");
+					pst2 = con.prepareStatement("SELECT * FROM pais WHERE idpais = ?");
+					pst2.clearParameters();
+					pst2.setInt(1, idpais);
+					rs2 = pst2.executeQuery();
+					rs2.next();
+					f.setPais(rs2.getString("nombre"), rs2.getString("idioma"));
+				}
 			}
 		} catch (java.sql.SQLException e) {
 			System.err.println("Error de SQL: " + e.getMessage());

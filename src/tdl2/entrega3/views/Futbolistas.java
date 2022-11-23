@@ -6,11 +6,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import tdl2.entrega3.DAO.FactoryDAO;
 import tdl2.entrega3.DAO.implJDBC.FutbolistaDAOjdbc;
+import tdl2.entrega3.DAO.implJDBC.PaisDAOjdbc;
 import tdl2.entrega3.classes.Futbolista;
 
 public class Futbolistas extends JDialog {
@@ -20,15 +20,16 @@ public class Futbolistas extends JDialog {
 	private JTable tabla = new JTable();
 	private String[] titulos = { "ID", "NOMBRE", "APELLIDO", "EDITAR", "ELIMINAR" };
 	private Object[][] datos = {};
-	FutbolistasTableModel modelo = new FutbolistasTableModel(datos, titulos);
-	JButton tableButton = new JButton();
-	JButton crearFButton;
-	JButton exportCSVButton;
-	JButton btnVolver;
-	IngresarFutbolista crearFutbView;
-	IngresarFutbolista editarFutbView;
-	Eliminar eliminarView;
-	FutbolistaDAOjdbc futDAO;
+	private FutbolistasTableModel modelo;
+	private JButton tableButton = new JButton();
+	private JButton crearFButton;
+	private JButton exportCSVButton;
+	private JButton btnVolver;
+	private IngresarFutbolista crearFutbView;
+	private IngresarFutbolista editarFutbView;
+	private Eliminar eliminarView;
+	private FutbolistaDAOjdbc futDAO;
+	private PaisDAOjdbc paisDAO;
 
 	Futbolistas() {
 		// Dialog
@@ -67,11 +68,11 @@ public class Futbolistas extends JDialog {
 						boolean ok = crearFutbView.getTfEmail().getText().contains("@") &&
 								crearFutbView.getTfNombre().getText().matches("^[a-zA-Z]+$") &&
 								crearFutbView.getTfApellido().getText().matches("^[a-zA-Z]+$") &&
-								crearFutbView.getTfTelefono().getText().matches("^[0-9]+$") &&
-								crearFutbView.getTfPais().getText().matches("^[a-zA-Z]+$");
+								crearFutbView.getTfTelefono().getText().matches("^[0-9]+$");
 						if (ok) {
 							try {
 								futDAO = FactoryDAO.getFutbolistaDAO();
+								paisDAO = FactoryDAO.getPaisDAO();
 								// creo nuevo futbolista
 								Futbolista f = new Futbolista();
 								// edito futbolista con campos
@@ -79,17 +80,19 @@ public class Futbolistas extends JDialog {
 								f.setNombre(crearFutbView.getTfNombre().getText());
 								f.setApellido(crearFutbView.getTfApellido().getText());
 								f.setTelefono(Integer.valueOf(crearFutbView.getTfTelefono().getText()));
-								f.setPais("argentina", "español");
+								String nombrePais = (String) crearFutbView.getCbPaises().getSelectedItem();
+								f.setPais(paisDAO.encontrar(nombrePais));
 								// guardo futbolista en base de datos
 								futDAO.guardar(f);
-								// agrego fila
-								Object[] fila = { f.getID(), f.getNombre(), f.getApellido(), "EDITAR",
-										"ELIMINAR" };
-								modelo.addRow(fila);
+								// cargo nuevo modelo y seteo tabla
+								setTablaJugadores(datos, titulos);
 							} catch (Exception err) {
 								System.err.println("Error de SQL: " + err.getMessage());
 							}
 							crearFutbView.setVisible(false);
+						} else {
+							crearFutbView.getLblError().setForeground(Color.RED);
+							crearFutbView.getLblError().setText("Campos inválidos");
 						}
 					}
 				});
@@ -97,30 +100,11 @@ public class Futbolistas extends JDialog {
 		});
 
 		// TABLA - CENTRO
-		futDAO = FactoryDAO.getFutbolistaDAO();
-
-		try {
-			List<Futbolista> lista = futDAO.cargar();
-			for (Futbolista f : lista) {
-				Object[] fila = { f.getID(), f.getNombre(), f.getApellido(), "EDITAR", "ELIMINAR" };
-				modelo.addRow(fila);
-			}
-		} catch (SQLException e) {
-			System.err.println("Error de SQL: " + e.getMessage());
-		}
-
-		tabla.setModel(modelo);
-		tabla.getColumn("EDITAR").setCellRenderer(new ButtonRenderer());
-		tabla.getColumn("EDITAR").setCellEditor(new ButtonEditor(new JCheckBox()));
-
-		tabla.getColumn("ELIMINAR").setCellEditor(new ButtonEditor(new JCheckBox()));
-		tabla.getColumn("ELIMINAR").setCellRenderer(new ButtonRenderer());
+		setTablaJugadores(datos, titulos);
 
 		subPanel = new JPanel();
 		subPanel.add(new JScrollPane(tabla));
 		panel.add(subPanel, BorderLayout.CENTER);
-
-		eliminarView = new Eliminar();
 
 		tableButton.addActionListener(
 				new ActionListener() {
@@ -129,25 +113,30 @@ public class Futbolistas extends JDialog {
 						int row = (tabla.getSelectedRow() == -1) ? 0 : tabla.getSelectedRow();
 						int column = tabla.getSelectedColumn();
 						// obtengo id del futbolista
+						System.out.println("ROW: " + row);
 						String numberIdString = (tabla.getValueAt(row, 0)).toString();
-						int numberId = Integer.parseInt(numberIdString);
+						int numberId = Integer.valueOf(numberIdString);
+						System.out.println("numberID: " + numberId);
 
 						// COLUMNA ELIMINAR
 						if (column == 4) {
 							// activo vista eliminar
+							eliminarView = new Eliminar();
 							eliminarView.setVisible(true);
 							// SELECCIONA: SI
 							eliminarView.getBtnYes().addMouseListener(new MouseAdapter() {
 								public void mouseClicked(MouseEvent e) {
 									// desactivo vista eliminar
 									eliminarView.setVisible(false);
-									// ELIMINO FUTBOLISTA DE BD Y DE LA TABLA
+									// ELIMINO FUTBOLISTA DE BD
 									try {
+										// encuentro futbolista
 										futDAO = FactoryDAO.getFutbolistaDAO();
 										Futbolista f = futDAO.encontrar(numberId);
+										// elimino futbolista de la base de datos
 										futDAO = FactoryDAO.getFutbolistaDAO();
 										futDAO.eliminar(f);
-										modelo.removeRow(row);
+										setTablaJugadores(datos, titulos);
 									} catch (SQLException error) {
 										System.err.println("Error de SQL: " + error.getMessage());
 									}
@@ -156,10 +145,10 @@ public class Futbolistas extends JDialog {
 							// SELECCIONA: NO
 							eliminarView.getBtnNo().addMouseListener(new MouseAdapter() {
 								public void mouseClicked(MouseEvent e) {
+									setTablaJugadores(datos, titulos);
 									eliminarView.setVisible(false);
 								}
 							});
-
 						}
 						// COLUMNA EDITAR
 						if (column == 3) {
@@ -168,11 +157,11 @@ public class Futbolistas extends JDialog {
 							try {
 								futDAO = FactoryDAO.getFutbolistaDAO();
 								Futbolista f = futDAO.encontrar(numberId);
+								// cargar vista de editar futbolista con sus campos
 								editarFutbView.getTfNombre().setText(f.getNombre());
 								editarFutbView.getTfApellido().setText(f.getApellido());
 								editarFutbView.getTfEmail().setText(f.getEmail());
 								editarFutbView.getTfTelefono().setText(Integer.toString(f.getTelefono()));
-								editarFutbView.getTfPais().setText(f.getPais().getNombre());
 							} catch (SQLException error) {
 								System.err.println("Error de SQL: " + error.getMessage());
 							}
@@ -184,24 +173,24 @@ public class Futbolistas extends JDialog {
 									boolean ok = editarFutbView.getTfEmail().getText().contains("@") &&
 											editarFutbView.getTfNombre().getText().matches("^[a-zA-Z]+$") &&
 											editarFutbView.getTfApellido().getText().matches("^[a-zA-Z]+$") &&
-											editarFutbView.getTfTelefono().getText().matches("^[0-9]+$") &&
-											editarFutbView.getTfPais().getText().matches("^[a-zA-Z]+$");
+											editarFutbView.getTfTelefono().getText().matches("^[0-9]+$");
 									if (ok) {
 										try {
 											// obtengo futbolista
 											futDAO = FactoryDAO.getFutbolistaDAO();
 											Futbolista f = futDAO.encontrar(numberId);
+											paisDAO = FactoryDAO.getPaisDAO();
 											// edito futbolista con campos
 											f.setEmail(editarFutbView.getTfEmail().getText());
 											f.setNombre(editarFutbView.getTfNombre().getText());
 											f.setApellido(editarFutbView.getTfApellido().getText());
 											f.setTelefono(Integer.valueOf(editarFutbView.getTfTelefono().getText()));
+											String nombrePais = (String) editarFutbView.getCbPaises().getSelectedItem();
+											f.setPais(paisDAO.encontrar(nombrePais));
 											// edito base de datos
 											futDAO.editar(f, numberId);
-											modelo.removeRow(row);
-											Object[] fila = { f.getID(), f.getNombre(), f.getApellido(), "EDITAR",
-													"ELIMINAR" };
-											modelo.insertRow(row, fila);
+											// cargo modelo y seteo tabla nuevamente
+											setTablaJugadores(datos, titulos);
 										} catch (Exception err) {
 											System.err.println("Error de SQL: " + err.getMessage());
 										}
@@ -247,6 +236,29 @@ public class Futbolistas extends JDialog {
 		public Object getCellEditorValue() {
 			return new String(label);
 		}
+	}
+
+	// setTabla
+	public void setTablaJugadores(Object[][] datos, String[] titulos) {
+		FutbolistasTableModel m = new FutbolistasTableModel(datos, titulos);
+		FutbolistaDAOjdbc futDAO = FactoryDAO.getFutbolistaDAO();
+
+		try {
+			List<Futbolista> lista = futDAO.cargar();
+			for (Futbolista f : lista) {
+				Object[] fila = { f.getID(), f.getNombre(), f.getApellido(), "EDITAR", "ELIMINAR" };
+				m.addRow(fila);
+			}
+		} catch (SQLException e) {
+			System.err.println("Error de SQL: " + e.getMessage());
+		}
+		tabla.setModel(m);
+		tabla.getColumn("EDITAR").setCellRenderer(new ButtonRenderer());
+		tabla.getColumn("EDITAR").setCellEditor(new ButtonEditor(new JCheckBox()));
+
+		tabla.getColumn("ELIMINAR")
+				.setCellEditor(new ButtonEditor(new JCheckBox()));
+		tabla.getColumn("ELIMINAR").setCellRenderer(new ButtonRenderer());
 	}
 
 	// BOTONES

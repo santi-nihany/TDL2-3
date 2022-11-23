@@ -12,7 +12,7 @@ public interface PaisDAO {
 
 	void eliminar(Pais f) throws SQLException;
 
-	void editar(Pais f, String nombre) throws SQLException;
+	void editar(Pais f, int id) throws SQLException;
 
-	Pais encontrar(String name) throws SQLException;
+	Pais encontrar(String nombre) throws SQLException;
 }
